@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    // javascript 허용
+    "checkJs": true,
+    // js에서 @ts-check
+    "noImplicitAny": true
+    // 기본적인, any 타입이라도 넣어야 된다는 설정.
+  }
+}
