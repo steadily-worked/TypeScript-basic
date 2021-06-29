@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "target": "ES5",
+    "outDir": "./built",
+    "moduleResolution": "Node",
+    "lib": ["ES2015", "DOM"]
+  },
+  "include": ["./src/**/*"]
+  //   어떤 폴더를 대상으로 ts를 컴파일 시킬 것인지 결정
+}
