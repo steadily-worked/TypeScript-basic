@@ -4,7 +4,10 @@
     "target": "ES5",
     "outDir": "./built",
     "moduleResolution": "Node",
-    "lib": ["ES2015", "DOM"]
+    "lib": ["ES2015", "DOM", "DOM.iterable"],
+    "noImplicitAny": true,
+    // 내부적으로 any 타입으로 간주하지 않음
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": ["./src/**/*"]
   //   어떤 폴더를 대상으로 ts를 컴파일 시킬 것인지 결정
