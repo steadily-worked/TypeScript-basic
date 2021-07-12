@@ -73,7 +73,7 @@ HTTP 요청 리스트(ajax)
 ### GET /users
 - 내 로그인 정보를 가져옴, 로그인되어있지 않으면 false
 - return: IUser | false
-### GET /workspaces/:workspace/members/:id
+### GET /workspaces/:workspace/users/:id
 - :workspace의 멤버인 특정 :id 사용자 정보를 가져옴
 - return: IUser
 ### POST /users
