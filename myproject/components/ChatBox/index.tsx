@@ -1,11 +1,11 @@
-import { ChatArea, EachMention, Form, MentionsTextarea, SendButton, Toolbox } from '@components/ChatBox/styles';
-import { IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
-import React, { useCallback, useEffect, useRef, VFC } from 'react';
+import React, { useCallback, VFC, useEffect, useRef } from 'react';
+import { ChatArea, Form, MentionsTextarea, Toolbox, SendButton, EachMention } from './styles';
 import autosize from 'autosize';
 import { Mention, SuggestionDataItem } from 'react-mentions';
-import { useParams } from 'react-router';
 import useSWR from 'swr';
+import { IUser } from '@typings/db';
+import fetcher from '@utils/fetcher';
+import { useParams } from 'react-router';
 import gravatar from 'gravatar';
 
 interface Props {
@@ -14,13 +14,25 @@ interface Props {
   onChangeChat: (e: any) => void;
   placeholder?: string;
 }
+
 const ChatBox: VFC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder }) => {
   const { workspace } = useParams<{ workspace: string }>();
-  const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>('/api/users', fetcher, {
-    dedupingInterval: 2000, // 2초
-  });
-  const { data: memberData } = useSWR<IUser[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher);
+  const {
+    data: userData,
+    error,
+    revalidate,
+    mutate,
+  } = useSWR<IUser | false>('/api/users', fetcher, { dedupingInterval: 2000 });
+  const { data: memberData } = useSWR<IUser[]>(
+    userData ? `/api/workspaces/${workspace}/channels/${workspace}/members` : null,
+    fetcher,
+  );
 
+  // const onSubmitForm = useCallback((e) => {
+  //   // 채널 메시지 보내기나 DM 메시지를 보내기를 할 경우, 각각 나머지 부분에서는 적용할 수 없다는 문제가 있다.
+  //   // 따라서 부모에서 관리하게끔 Props로 관리한다.
+  //   e.preventDefault();
+  // }, []);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (textareaRef.current) {
@@ -39,7 +51,6 @@ const ChatBox: VFC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder }) 
     },
     [onSubmitForm],
   );
-
   const renderSuggestion = useCallback(
     (
       suggestion: SuggestionDataItem,
@@ -74,12 +85,14 @@ const ChatBox: VFC<Props> = ({ chat, onSubmitForm, onChangeChat, placeholder }) 
           inputRef={textareaRef}
           allowSuggestionsAboveCursor
         >
+          {/* 커서보다 위쪽에 suggestion 만들어달라. input 박스보다 아래에 있으면 안보이게됨 */}
           <Mention
             appendSpaceOnAdd
             trigger="@"
             data={memberData?.map((v) => ({ id: v.id, display: v.nickname })) || []}
             renderSuggestion={renderSuggestion}
           />
+          {/* id는 member의 id로, 보이는 건 memberData 내 nickname으로.*/}
         </MentionsTextarea>
         <Toolbox>
           <SendButton
