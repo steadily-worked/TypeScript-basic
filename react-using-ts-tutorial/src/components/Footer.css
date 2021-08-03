@@ -1,0 +1,16 @@
+* {
+  box-sizing: border-box;
+}
+#footer {
+  padding: 0 244px;
+  height: 66px;
+  border-bottom: 1px solid #f4f4f4;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#footer > #link {
+  color: #474747;
+  font-size: 16px;
+}
