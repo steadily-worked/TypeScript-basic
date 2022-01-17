@@ -1,34 +1,21 @@
-function add(n1: number, n2: number): number {
-  return n1 + n2;
+let userInput: unknown;
+// unknown type: 사용자가 어떤 값을 입력할지 모르므로 unknown -> 아무 값이나 들어가도 컴파일 에러가 생기지 않음
+let userName: string;
+
+userInput = 5;
+userInput = "steadily";
+if (typeof userInput === "string") {
+  userName = userInput;
+}
+// userName = userInput;
+// unknown 타입은 string 타입에 할당할 수 없음. 왜냐면 unknown이 string이 아닐 수도 있으니까.
+// any랑 비슷하지만, any는 타입 검사를 하지 않으므로 이 경우 문제가 생기지 않음
+// userInput의 타입을 string으로 한정짓는다면() 가능
+// 추가로 type 확인이 필요한 부분이 unknown 값과 특정 고정값이 제대로 작용하는지 확인할 수 있기 때문에 unknown이 any보다 낫다.
+
+function generateError(message: string, code: number) {
+  throw { message: message, errorCode: code };
 }
 
-function printResult(num: number): void {
-  // return type void: return문의 상세가 없을 경우
-  // return type undefined: 어딘가에 return이 존재할 때(실제 값을 return하진 않음)
-  console.log("Result: " + num);
-  return;
-}
-
-function addAndHandle(n1: number, n2: number, cb: (num: number) => void) {
-  const result = n1 + n2;
-  cb(result);
-  // 파라미터 두개를 더하고 그 값에 대해 콜백 함수 실행
-}
-
-printResult(add(5, 12));
-
-// undefined도 TypeScript에서는 타입에 해당한다.
-// but function은 undefined를 리턴할 수 없으므로 에러가 발생한다.
-let combineValues: /*Function*/ (a: number, b: number) => number;
-// 결합한 값이 숫자 타입의 매개변수 두개를 사용하고 숫자를 반환하는 함수를 허용한다는 뜻
-
-combineValues = add;
-// combineValues = printResult;
-// 변수가 함수를 가리키게 할 수 있음
-
-console.log(combineValues(8, 8));
-// 설정된 함수와 맞지 않는 파라미터를 넣으면 undefined를 리턴한다.
-
-addAndHandle(10, 20, (result) => {
-  console.log(result);
-});
+const result = generateError("An error occurred!", 500);
+console.log(result);
