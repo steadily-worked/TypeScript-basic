@@ -1,11 +1,21 @@
 class Department {
+  static fiscalYear = 2022;
   // private readonly id: string;
   // private name: string;
   protected employees: string[] = [];
 
-  constructor(private readonly id: string, public name: string) {
+  constructor(protected readonly id: string, public name: string) {
     // this.id = id;
     // this.name = name;
+    // console.log(this.fiscalYear) // Property 'fiscalYear' is a static member of type 'Department'ts(2576)
+    // this는 클래스를 기반한 인스턴스를 참조하므로, 정적 프로퍼티는 당연히 인스턴스에서 작동하지 않을 것이다.
+    // 다시 말하면, 정적 프로퍼티와 메소드는 애초에 인스턴스와는 분리되어 있는 것이기 때문에 딘스턴스 내부에서는 작동하지 않을 것이다.
+    // 불러오려면, 클래스 안이더라도 Department.fiscalYear의 형태로 불러와야 한다.
+  }
+
+  // 정적 프로퍼티 사용: static 선언
+  static createEmployee(name: string) {
+    return { name: name };
   }
 
   describe(this: Department) {
@@ -63,6 +73,10 @@ class AccountingDepartment extends Department {
     this.lastReport = reports[0];
   }
 
+  describe() {
+    console.log("Accounting Department - ID: " + this.id);
+  }
+
   addEmployee(name: string) {
     if (name === "steadily") {
       return;
@@ -79,6 +93,11 @@ class AccountingDepartment extends Department {
     console.log(this.reports);
   }
 }
+
+const employee1 = Department.createEmployee("steadily");
+console.log(employee1, Department.fiscalYear); // {name: 'steadily'}
+// static 처리를 한 메소드에 대해서는 클래스명.메소드명("파라미터") 로 바로 접근 가능
+// 반면 이렇게 static 처리가 되어있는 것은, 정작 클래스 내부에서는 접근할 수 없다.
 
 const it = new ITDepartment("d1", ["steadily"]);
 
