@@ -1,4 +1,4 @@
-class Department {
+abstract class Department {
   static fiscalYear = 2022;
   // private readonly id: string;
   // private name: string;
@@ -18,12 +18,17 @@ class Department {
     return { name: name };
   }
 
-  describe(this: Department) {
-    console.log(`Department: (${this.id}): ${this.name}`);
+  // 기초 클래스에 빈 메소드를 놓고, 클래스에 기반된 모든 클래스들을 이 메소드에 추가하거나 오버라이드 해야 함
+  abstract describe(
+    this: Department
+  ): void; /* {
+    // console.log(`Department: (${this.id}): ${this.name}`);
     // 이 경우에는 항상 Department 클래스에 기반한 인스턴스를 참고함
-  }
+  } */
   // this는 보통 생성된 클래스의 구체적인 인스턴스를 참고한다.
   // this.~~~ 와 같은 구문으로 이 인스턴스의 모든 속성과 메소드에 접근할 수 있다.
+
+  // abstract 처리를 하면, 이제 이 describe 메소드가 어떻게 보여야 하는지, 구성이 어떤지 정의하기는 했지만
 
   addEmployee(employee: string) {
     this.employees.push(employee);
@@ -44,10 +49,18 @@ class ITDepartment extends Department {
     this.admins = admins;
     // this 키워드를 사용하기 위해선 먼저 super()로 불러오는 거 먼저 해야한다.
   }
+
+  describe() {
+    console.log("IT Department - ID: " + this.id);
+  }
+  // abstract class에서 describe를 abstract로 정의했기 때문에,
+  // 자식 클래스들에서는 무조건 describe가 필요하다. abstract로 구현된 클래스들은 스스로 인스턴스화 할 수 없다.
 }
 
 class AccountingDepartment extends Department {
   private lastReport: string;
+  private static instance: AccountingDepartment;
+  // 클래스에서 바로 접근 가능한 static 프로퍼티가 존재.
 
   public get mostRecentReport(): string {
     if (this.lastReport) {
@@ -68,9 +81,18 @@ class AccountingDepartment extends Department {
   // setter는 받아오는 getter와 다르게 작접 수행하는 메소드이다.
   // 넘겨받은 v(value)에 대해 값이 없는 경우가 아니라면 addReport를 실행하는 것이다.
 
-  constructor(id: string, private reports: string[]) {
+  private constructor(id: string, private reports: string[]) {
     super(id, "IT");
     this.lastReport = reports[0];
+  }
+
+  static getInstance() {
+    // 이 클래스에 이미 인스턴스가 있는지 확인, 없으면 새것을 리턴
+    if (AccountingDepartment.instance) {
+      return this.instance;
+    }
+    this.instance = new AccountingDepartment("d2", []);
+    return this.instance;
   }
 
   describe() {
@@ -105,9 +127,9 @@ it.addEmployee("steadily");
 it.addEmployee("worked");
 
 // accounting.employees[2] = "sangmin";
-// 메소드를 이용하는 방식이 아니라 이런 방식은 추천하지 않으며, 하더라도 둘 중 하나의 방식으로만 통일하는 게 좋다.
+// 메소드를 이용하는 방식이 아니라 이런 방식은 추천하지 않으며, 하더라도 둘 중 하나의 방식으로만(메소드를 이용하거나, 이용하지 않거나.) 통일하는 게 좋다.
 // 이렇게 직접 접근하는 방식을 막기 위해서 employees 프로퍼티에 private를 추가한다. 이 경우 클래스 내에서만 접근할 수 있다.
-// 정의된 클래스 내에서만 접근 가능하다는 말은 즉, 상속받는 하위 클래스에서도 접근할 수 없다는 말이다. 후자만 가능하게 하려면 private 대신 protected를 쓰면 된다.
+// 정의된 클래스 내에서만 접근 가능하다는 말은 즉, 상속받는 하위 클래스에서도 접근할 수 없다는 말이다. 후자만 가능하게 하려면 private 대신 protected를 쓰면 된다. 혹은 private로 하되 getter 메소드를 통해 조건부로 받을 수 있게 하면 된다.
 
 it.describe();
 it.name = "NEW NAME";
@@ -126,10 +148,12 @@ console.log(it);
 // 클래스의 프로퍼티는: 곧 클래스의 변수를 의미함
 // private: 오직 클래스 내부에서만(ex. 클래스 메소드 내부에서만) 접근할 수 있도록 한다.
 
-const accounting = new AccountingDepartment("d2", []);
+// const accounting = new AccountingDepartment("d2", []);
+// constructor에 private 설정을 하면, 클래스 안에서만 접근할 수 있으므로 새로운 객체를 생성할 수 없게 된다.
+const accounting = AccountingDepartment.getInstance();
 
 accounting.mostRecentReport = "Latest Report";
-// setter로 실행하려면 값을 대입해줘야 한다. 우항에 들어가는 값이 setter의 파라미터로 들어간다.
+// setter로 실행하려면 괄호로 실행시켜줄 게 아니라, 값을 대입해줘야 한다. 우항에 들어가는 값이 setter의 파라미터로 들어간다.
 
 accounting.addReport("Something went wrong...");
 console.log(accounting.mostRecentReport);
@@ -138,8 +162,9 @@ console.log(accounting.mostRecentReport);
 accounting.addEmployee("steadily");
 accounting.addEmployee("worked");
 
-accounting.printReports();
-accounting.printEmployeeInformation();
+accounting.describe(); // Accounting Department - ID: d2 (처음 시작부터 id를 d2로 박았으므로 그대로 나옴)
+// accounting.printReports();
+// accounting.printEmployeeInformation();
 
 // 정적 프로퍼티 사용: 새 클래스를 호출할 필요 없이 클래스에 직접 접근할 수 있게 된다.
 // ex) Math.PI
