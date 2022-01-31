@@ -134,3 +134,9 @@ function createCourseGoal(
 const names: Readonly<string[]> = ["steadily", "worked"];
 // Readonly는 속성 변경 및 객체에 새 속성 추가를 할 수 없게 함
 names.push("coding"); // Property 'push' does not exist on type 'readonly string[]'.ts(2339)
+
+// 제네릭 타입의 골자는, T나 U 등의 임의의 알파벳으로 설정을 해둔 뒤에 extends 등으로 받을 타입을 지정한 후
+// 그 제네릭 타입을 사용하는 변수를 선언할 때 타입을 지정해준다면 그 타입만 받아올 수 있다는 장점이다.
+// 유니온 타입은 반면에 일단 여러 개로 지정을 해 두면, 무엇이든 상관없이 전부 들어갈 수 있게 되어
+// 이로 인한 문제가 발생할 수 있다는 단점이 있다. 유니온 타입은 모든 메소드 호출이나 모든 함수 호출마다 다른 타입을
+// 지정하고자 하는 경우에 유용하다. 제네릭과는 완전 반대되는 성질을 가진 것이다.
