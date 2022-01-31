@@ -67,3 +67,70 @@ function extractAndConvert<T extends object, U extends keyof T>(
 // 여기에서 name에 빨간 줄이 그어지는 이유는, T의 키로 제약을 건 name에 해당하는 U가 없기 때문이다.
 // 이때는 비어있는 객체에 값을 넣어주면 된다.
 console.log(extractAndConvert({ name: "steadily" }, "name"));
+
+class DataStorage<T extends string | number | boolean> {
+  private data: T[] = [];
+
+  addItem(item: T) {
+    this.data.push(item);
+  }
+
+  removeItem(item: T) {
+    if (this.data.indexOf(item) === -1) {
+      return;
+    }
+    this.data.splice(this.data.indexOf(item), 1);
+    // 찾지 못하면 -1을 제거하기 때문에 마지막 요소가 제거됨
+  }
+
+  getItems() {
+    return [...this.data];
+  }
+}
+
+const textStorage = new DataStorage<string>();
+textStorage.addItem("steadily");
+textStorage.addItem("worked");
+textStorage.removeItem("steadily");
+console.log(textStorage.getItems());
+
+const numberStorage = new DataStorage<number>();
+// const objStorage = new DataStorage<object>();
+// const maxObj = { name: "steadily" };
+// objStorage.addItem(maxObj);
+// objStorage.addItem({ name: "worked" });
+// objStorage.removeItem(maxObj);
+// // 객체의 경우는 삭제가 제대로 되지 않는데, 이는 객체를 새로 정의함으로써 메모리를 개별적으로 차지하기 때문이다.
+// // 이러한 문제를 해결하려면, 애초에 변수에 객체를 지정해두고 그 변수를 메소드의 파라미터로 집어넣는 방식을 사용하면 된다.
+// // 근데 이렇게 하는 건 사실 비효율적이라, 애초에 객체에만 해당하는 DataStorage를 만드는 것이 더 낫다.
+// console.log(objStorage.getItems());
+
+// 제네릭 클래스에서도 타입의 제약을 걸 수 있는데, 이를 통해 훨씬 유연하고 안전하게 작업할 수 있다.
+
+interface CourseGoal {
+  title: string;
+  description: string;
+  completeUntil: Date;
+}
+
+function createCourseGoal(
+  title: string,
+  description: string,
+  date: Date
+): CourseGoal {
+  // let courseGoal: CourseGoal = {};
+  // 이 경우 courseGoal이 비어있는 객체이므로 Type '{}' is missing the following properties from type 'CourseGoal': title, description, completeUntilts(2739)
+  // 와 같은 에러가 나타난다.
+  let courseGoal: Partial<CourseGoal> = {};
+  // Partial 타입은 모든 속성이 선택적인 객체 타입으로 바꾼다.
+  courseGoal.title = title;
+  courseGoal.description = description;
+  courseGoal.completeUntil = date;
+  // return courseGoal
+  // but 이 경우라면 return courseGoal은 불가능한데, 그 이유는 CourseGoal의 부분 타입일 뿐 CourseGoal 타입이 아니기 때문이다.
+  return courseGoal as CourseGoal; // courseGoal을 CourseGoal로 형 변환하여 해결할 수 있다.
+}
+
+const names: Readonly<string[]> = ["steadily", "worked"];
+// Readonly는 속성 변경 및 객체에 새 속성 추가를 할 수 없게 함
+names.push("coding"); // Property 'push' does not exist on type 'readonly string[]'.ts(2339)
