@@ -30,11 +30,7 @@
 // const prjInput = new ProjectInput();
 
 // autobind decorator
-function autobind(
-  target: any,
-  methodName: string,
-  descriptor: PropertyDescriptor
-) {
+function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
   const adjDescriptor: PropertyDescriptor = {
     configurable: true,
@@ -82,10 +78,40 @@ class ProjectInput {
     this.attach();
   }
 
+  // 반환 타입으로 배열 내에 객체들의 모임: 튜플. 위 타입은, 반환하는 것이 없거나 튜플이라고 하는 것이다.
+  private gatherUserInput(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDescription = this.descriptionInputElement.value;
+    const enteredPeople = this.peopleInputElement.value;
+
+    if (
+      enteredTitle.trim().length === 0 ||
+      enteredDescription.trim().length === 0 ||
+      enteredPeople.trim().length === 0
+    ) {
+      alert("칸을 전부 채워주세요");
+      return;
+    } else {
+      return [enteredTitle, enteredDescription, +enteredPeople];
+    }
+  }
+
+  private clearInputs() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.peopleInputElement.value = "";
+  }
+
   @autobind
   private submitHandler(e: Event) {
     e.preventDefault();
     console.log(this.titleInputElement.value);
+    const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      const [title, desc, people] = userInput;
+      console.log(title, desc, people);
+      this.clearInputs();
+    }
   }
 
   private configure() {
